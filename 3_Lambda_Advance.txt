@@ -287,6 +287,52 @@ Relation:
 Scaling = how many instances created  
 Concurrency = how many running at same time
 
+✅ 1. Why concurrency is needed if Lambda auto-scales
+
+AWS provides account-level concurrency (default ~1000)
+→ Shared by all Lambda functions
+Lambda auto-scales by increasing concurrent executions
+Concurrency is needed to control scaling within this limit
+
+Helps to:
+
+Prevent DB/API overload
+Control cost spikes
+Avoid one Lambda consuming entire account concurrency
+Ensure system stability
+
+✅ Provisioned concurrency → avoids cold starts
+
+✅ 2. Reserved Concurrency (per Lambda)
+
+Set per Lambda function (optional)
+Allocates a portion of account-level concurrency (1000)
+
+Acts as:
+
+✅ Maximum execution limit
+✅ Guaranteed capacity
+
+Example:
+Account limit = 1000
+
+Lambda A → 300
+Lambda B → 200
+Remaining → 500 (shared)
+
+Benefits:
+
+Protects critical Lambdas
+Prevents “noisy neighbor” problem
+
+Special case:
+
+0 → disables Lambda
+
+
+🎯 One-line summary
+
+AWS gives a shared concurrency pool (1000), Lambda auto-scales within it, and reserved concurrency ensures fair usage and protects critical functions.
 
 ============================================================
 ✅ 5. TIMEOUT ISSUE
