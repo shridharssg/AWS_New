@@ -1,0 +1,125 @@
+
+✅ LAMBDA VERSION & ALIAS
+============================================================
+
+
+✅ 1️⃣ VERSION (IMMUTABLE SNAPSHOT)
+------------------------------------------------------------
+
+✔ What it is:
+A version is a fixed snapshot of Lambda code + configuration
+
+------------------------------------------------------------
+
+✔ Behavior:
+• Created using "Publish version"
+• Version is READ-ONLY (cannot change)
+• Includes:
+   - Code
+   - Environment variables
+   - Memory, timeout, etc.
+
+------------------------------------------------------------
+
+✔ Why needed:
+✅ Stable deployment
+✅ Rollback possible
+✅ Safe releases
+
+------------------------------------------------------------
+
+✔ Example:
+Version 1 → old code
+Version 2 → new code
+
+
+============================================================
+
+
+✅ 2️⃣ ALIAS (POINTER TO VERSION)
+------------------------------------------------------------
+
+✔ What it is:
+Alias is a name that points to a specific version
+
+------------------------------------------------------------
+
+✔ Behavior:
+• Logical name (like "dev", "prod")
+• Can switch between versions easily
+• Can route traffic between versions
+
+------------------------------------------------------------
+
+✔ Why needed:
+✅ Avoid using version numbers directly
+✅ Easy deployment switching
+✅ Traffic control (blue/green, canary)
+
+------------------------------------------------------------
+
+✔ Example:
+Alias "prod" → Version 1
+Later → change "prod" → Version 2
+
+
+============================================================
+
+
+✅ 3️⃣ VERSION vs ALIAS (SIMPLE VIEW)
+------------------------------------------------------------
+
+Version → Fixed snapshot (cannot change)
+Alias   → Dynamic pointer (can change anytime)
+
+
+============================================================
+
+
+✅ 4️⃣ TRAFFIC SHIFT (IMPORTANT)
+------------------------------------------------------------
+
+✔ Alias can split traffic:
+
+Example:
+• 90% → Version 1
+• 10% → Version 2
+
+------------------------------------------------------------
+
+✅ Used for:
+• Canary deployment
+• Safe rollout
+
+
+============================================================
+
+
+✅ ✅ FINAL FLOW
+------------------------------------------------------------
+
+Client
+ ↓
+API Gateway
+ ↓
+Alias (prod)
+ ↓
+Version (v1 / v2)
+ ↓
+Lambda execution
+
+
+============================================================
+
+
+✅ ✅ ONE LINE SUMMARY
+------------------------------------------------------------
+
+Version = Immutable code snapshot  
+Alias   = Flexible pointer + traffic controller  
+
+
+============================================================
+🚀 END
+============================================================
+```
