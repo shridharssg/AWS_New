@@ -334,6 +334,19 @@ Special case:
 
 AWS gives a shared concurrency pool (1000), Lambda auto-scales within it, and reserved concurrency ensures fair usage and protects critical functions.
 
+
+⚡ How It Works (Flow)
+Incoming Requests → Lambda
+
+Step 1: Check Reserved Concurrency
+   → If set → Use reserved limit
+
+Step 2: If not reserved
+   → Use shared pool (remaining concurrency)
+
+Step 3: If limit exceeded
+   → Throttling happens ❌
+
 ============================================================
 ✅ 5. TIMEOUT ISSUE
 ------------------------------------------------------------
