@@ -1,0 +1,208 @@
+✅ AWS COGNITO (AUTHENTICATION)
+==================================================
+
+✅ WHY COGNITO IS NEEDED
+--------------------------------------------------
+Applications require secure authentication
+
+Problems with custom Node.js auth:
+	• Password security handling
+	• JWT token generation
+	• Token expiry management
+	• Brute force protection
+	• Compliance risks
+
+✅ Cognito solves:
+	• Offloads authentication to AWS
+	• Reduces backend complexity
+
+--------------------------------------------------
+
+❌ TRADITIONAL NODE.JS AUTH
+--------------------------------------------------
+Backend manages:
+	• Users table
+	• Password hashing
+	• JWT creation
+	• Refresh tokens
+	• Forgot password logic
+
+Issues:
+	• High maintenance
+	• Security risks
+	• Hard to scale
+
+--------------------------------------------------
+
+✅ WHAT IS COGNITO
+--------------------------------------------------
+Managed authentication & user management service
+
+AWS handles:
+	• Signup / Login
+	• Password policies
+	• MFA
+	• JWT issuance
+	• Token refresh
+
+✅ Backend does NOT manage passwords
+
+--------------------------------------------------
+
+✅ COGNITO vs NODE.JS AUTH
+--------------------------------------------------
+Node.js:
+	• You manage users
+	• You generate JWT
+	• You manage security
+
+Cognito:
+	• AWS manages users
+	• Cognito issues JWT
+	• AWS handles security
+
+--------------------------------------------------
+
+✅ ARCHITECTURE FLOW
+--------------------------------------------------
+Client → Cognito (Login)
+Client → API Gateway (JWT)
+API Gateway → Lambda
+
+API Gateway:
+	• Validates JWT
+	• Blocks invalid requests
+
+Lambda:
+	• Trusts request
+
+--------------------------------------------------
+
+✅ WHAT COGNITO REPLACES
+--------------------------------------------------
+• Login APIs
+• Signup APIs
+• Password reset logic
+• Token lifecycle management
+
+❌ Does NOT replace business logic
+
+--------------------------------------------------
+
+✅ KEY BENEFITS
+--------------------------------------------------
+• Secure by default
+• Auto scalable
+• Works with web/mobile
+• Low maintenance
+
+--------------------------------------------------
+
+✅ USER POOL
+--------------------------------------------------
+User Pool = Managed user directory
+
+Handles:
+	• Signup
+	• Login
+	• Verification
+	• MFA
+
+Equivalent to:
+	Users table + auth engine
+
+--------------------------------------------------
+
+✅ SIGNUP FLOW
+--------------------------------------------------
+Client → Cognito
+	• User created
+	• Password hashed
+	• Verification sent (email/SMS)
+
+Backend NOT involved
+
+--------------------------------------------------
+
+✅ LOGIN FLOW
+--------------------------------------------------
+Client → Cognito
+	• Credentials validated
+	• JWT tokens issued
+
+Protects backend from attacks
+
+--------------------------------------------------
+
+✅ JWT TOKENS
+--------------------------------------------------
+• Access Token → API calls
+• ID Token → User info
+• Refresh Token → Renew access
+
+Backend NEVER creates tokens
+
+--------------------------------------------------
+
+✅ API GATEWAY + COGNITO
+--------------------------------------------------
+• Uses Cognito Authorizer
+• Validates JWT before Lambda
+
+If invalid:
+	❌ Request rejected
+
+--------------------------------------------------
+
+✅ LAMBDA USER INFO
+--------------------------------------------------
+Data available in:
+	event.requestContext.authorizer.claims
+
+No DB lookup needed
+
+--------------------------------------------------
+
+✅ WHAT COGNITO HANDLES
+--------------------------------------------------
+• Password policy
+• Forgot password
+• Account lock
+• MFA
+• Token expiry & refresh
+• Social login
+
+--------------------------------------------------
+
+✅ WHAT COGNITO DOES NOT DO
+--------------------------------------------------
+• Business authorization
+• Data ownership checks
+• Backend logic
+
+👉 Cognito = Identity only
+
+--------------------------------------------------
+
+✅ BILLING (VERY IMPORTANT)
+--------------------------------------------------
+• Based on Monthly Active Users (MAU)
+• First 50,000 MAU → FREE
+• Pay only for active users
+
+Extra:
+	• Email → Free
+	• SMS → Charged
+
+✅ Cost is very low for most apps
+
+--------------------------------------------------
+
+✅ INTERVIEW QUICK ANSWERS
+--------------------------------------------------
+• User Pool → Managed user directory
+• API protection → API Gateway + Cognito Authorizer
+• JWT validation → Done by API Gateway
+• Lambda role → Trust validated request
+
+==================================================

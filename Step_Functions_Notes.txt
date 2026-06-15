@@ -1,0 +1,205 @@
+✅ AWS STEP FUNCTIONS (WORKFLOW ORCHESTRATION)
+==================================================
+
+✅ WHAT IS STEP FUNCTIONS
+--------------------------------------------------
+• Workflow orchestration service
+• Controls order, retries, failures, branching
+• Works with multiple Lambdas
+
+👉 Controls FLOW, not execution logic
+
+--------------------------------------------------
+
+✅ WHY STEP FUNCTIONS IS NEEDED
+--------------------------------------------------
+• When steps depend on each other
+• Need strict execution order
+• Need retries per step
+• Need visibility of failures
+
+❌ Lambda chaining becomes complex
+✅ Step Functions simplifies workflow
+
+--------------------------------------------------
+
+✅ STAGE-WISE EVOLUTION (VERY IMPORTANT)
+--------------------------------------------------
+
+✅ Stage 1 (Simple)
+	Lambda → Lambda
+	• Works for small flows
+	• Manual retry handling
+
+✅ Stage 2 (Workflow grows)
+	Step Function → Multiple Lambdas
+	• Order control
+	• Retry logic
+	• Error handling
+	• Execution tracking
+
+✅ Stage 3 (Async background work)
+	Step Function → Business tasks
+		↓
+		SQS
+		↓
+	Worker Lambdas
+
+✅ Step Functions = Business workflow
+✅ SQS = Background tasks
+
+--------------------------------------------------
+
+✅ WHAT STEP FUNCTIONS DOES
+--------------------------------------------------
+• Orchestrates steps
+• Passes data between steps
+• Retries failed steps
+• Routes success/failure
+• Handles long workflows
+
+--------------------------------------------------
+
+❌ WHAT STEP FUNCTIONS DOES NOT DO
+--------------------------------------------------
+• Does NOT execute business logic
+• Does NOT replace Lambda
+• Does NOT replace SQS
+• Does NOT auto-rollback
+
+👉 Rollback uses compensation (Saga Pattern)
+
+--------------------------------------------------
+
+✅ FAILURE HANDLING (IMPORTANT)
+--------------------------------------------------
+Example:
+	Order ✅
+	Payment ✅
+	Inventory ❌
+
+Default:
+	Workflow fails
+
+Correct approach:
+	• Use Catch
+	• Trigger compensation:
+		• Refund payment
+		• Cancel order
+
+--------------------------------------------------
+
+✅ STEP FUNCTIONS vs SQS
+--------------------------------------------------
+Use Step Functions when:
+	• Ordered workflow
+	• Retry per step
+	• Business flow
+
+Use SQS when:
+	• Async processing
+	• Background tasks
+	• Fire-and-forget
+
+--------------------------------------------------
+
+✅ WHEN TO USE STEP FUNCTIONS
+--------------------------------------------------
+✅ Multi-step flow
+✅ Dependency between steps
+✅ Retry & error control
+✅ Execution visibility
+
+❌ Single Lambda
+❌ Simple async work
+
+--------------------------------------------------
+
+✅ REAL ARCHITECTURE FLOW
+--------------------------------------------------
+Client
+ ↓
+API Gateway
+ ↓
+API Lambda
+ ↓
+Step Functions
+ ↓
+Business Lambdas
+ ↓
+SQS (optional)
+ ↓
+Worker Lambdas
+
+--------------------------------------------------
+
+✅ STEP-BY-STEP EXECUTION
+==================================================
+
+STEP 1: Client → API Gateway
+	• JWT validation
+	• Rate limiting
+	• Request validation
+
+STEP 2: API Lambda
+	• Validate input
+	• Start Step Function
+	• Return response (202)
+
+STEP 3: Step Function
+	• Takes control of workflow
+
+STEP 4: Business Lambdas
+	• CreateOrder
+	• ProcessPayment
+	• UpdateInventory
+
+STEP 5: Publish Event
+	• Send message to SQS
+
+STEP 6: SQS + Workers
+	• Email
+	• Invoice
+	• Analytics
+
+--------------------------------------------------
+
+✅ ADDITIONAL IMPORTANT CONCEPTS
+--------------------------------------------------
+
+✅ State Types
+	• Task → Run Lambda
+	• Choice → Conditional branching
+	• Parallel → Run multiple tasks
+	• Wait → Delay execution
+	• Fail / Succeed → End states
+
+✅ Input/Output Handling
+	• Pass data between steps
+	• Transform using JSON paths
+
+✅ Execution Types
+	• Standard → Long-running, durable
+	• Express → High throughput, short-lived
+
+✅ Visualization
+	• Graph view of workflow
+	• Easy debugging
+
+--------------------------------------------------
+
+✅ BEST PRACTICES
+--------------------------------------------------
+• Keep Lambdas small
+• Use retries with limits
+• Add logging in each step
+• Use SQS for async tasks
+• Design compensation flow
+
+--------------------------------------------------
+
+✅ INTERVIEW SUMMARY
+--------------------------------------------------
+Step Functions orchestrate workflows, Lambda executes logic, and SQS handles async tasks
+
+==================================================

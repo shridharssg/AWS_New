@@ -1,0 +1,357 @@
+✅ AMAZON SQS COMPLETE NOTES (CLEAN TEXT VERSION)
+
+============================================================
+✅ 1. WHAT IS SQS
+
+------------------------------------------------------------
+• SQS (Simple Queue Service) = Managed message queue
+• Used to decouple systems
+• Enables asynchronous processing
+• Handles traffic spikes automatically
+
+============================================================
+✅ 2. WHY SQS IS USED
+------------------------------------------------------------
+• Keep APIs fast
+• Avoid long-running operations
+• Automatic retry mechanism
+• Improves scalability & reliability
+
+
+SQS is used to separate API and background work for better performance,scalability, and failure handling.
+
+============================================================
+✅ 3. BASIC FLOW
+------------------------------------------------------------
+Producer (API / Lambda)
+        ↓
+SQS Queue
+        ↓
+Consumer (Lambda)
+
+• Producer sends message
+• Consumer processes later
+• Both are independent
+
+============================================================
+✅ 4. TYPES OF SQS
+------------------------------------------------------------
+✔ Standard Queue
+   • Unlimited throughput
+   • At-least-once delivery
+   • Order NOT guaranteed
+
+✔ FIFO Queue
+   • Order guaranteed
+   • Exactly-once processing
+   • Limited throughput
+
+============================================================
+✅ 5. SQS + LAMBDA
+------------------------------------------------------------
+• Lambda acts as consumer
+• AWS automatically polls queue
+• No polling code required
+
+============================================================
+✅ 6. VISIBILITY TIMEOUT (IMPORTANT)
+------------------------------------------------------------
+• Message becomes invisible when consumed
+• Prevents duplicate processing
+
+✔ Success → message deleted
+❌ Failure → message visible again
+
+============================================================
+✅ 7. RETRY MECHANISM
+------------------------------------------------------------
+• Fully automatic
+• Happens when:
+   - Lambda error
+   - Timeout
+
+============================================================
+✅ 8. DEAD LETTER QUEUE (DLQ)
+------------------------------------------------------------
+• Stores failed messages
+• Configured with max retries
+
+✔ Prevents infinite retries
+
+============================================================
+✅ 9. IDEMPOTENCY (CRITICAL)
+------------------------------------------------------------
+• Messages can be duplicated
+• System must handle duplicates safely
+
+✔ Use:
+   - Order ID
+   - DB check
+
+============================================================
+✅ 10. BATCH PROCESSING
+------------------------------------------------------------
+• Lambda receives multiple messages
+• If batch fails → all retry
+
+✔ Use small batch for critical tasks
+
+============================================================
+✅ 11. REAL FLOW (ORDER EXAMPLE)
+------------------------------------------------------------
+Client
+   ↓
+API Gateway
+   ↓
+Order Lambda
+   ↓
+SQS Queue
+   ↓
+Worker Lambda
+
+STEP FLOW:
+• Save order
+• Send message to SQS
+• API responds fast
+• Worker processes later
+
+============================================================
+✅ 12. MESSAGE STRUCTURE
+------------------------------------------------------------
+{
+  "orderId": "123",
+  "email": "user@test.com",
+  "event": "ORDER_CREATED"
+}
+
+============================================================
+
+
+✅STEP-BY-STEP FLOW (ORDER CREATE → SQS → LAMBDA)
+------------------------------------------------------------
+
+
+When order API is called,
+Lambda sends message to SQS instead of processing directly.
+
+SQS stores message and triggers Worker Lambda.
+
+If Worker succeeds → message deleted
+If fails → message retried automatically
+
+This decouples system and improves scalability.
+
+
+✅ Step 1: API receives request
+--------------------------------
+• Client calls API:
+  POST /orders/create
+
+• API Gateway triggers:
+  OrderCreateLambda
+
+
+============================================================
+
+✅ Step 2: OrderCreateLambda (Core Work Only)
+--------------------------------------------
+Inside OrderCreateLambda:
+
+• Validate request
+• Save order in DB
+• Send message to SQS
+
+Example message:
+{
+  "orderId": "ORD123",
+  "event": "ORDER_CREATED",
+  "email": "user@test.com"
+}
+
+✔ Lambda returns response immediately  
+✔ Client is DONE (fast response)
+
+
+============================================================
+
+✅ Step 3: Message stored in SQS
+--------------------------------
+Now SQS will:
+
+• Store the message
+• Wait for processing
+• Ensure delivery
+
+At this stage:
+
+✔ API is completed  
+✔ User is not waiting  
+✔ Processing will happen later  
+
+
+============================================================
+
+✅ Step 4: Lambda reads message from SQS
+----------------------------------------
+Configuration:
+
+SQS Queue → Trigger → WorkerLambda
+
+AWS automatically:
+
+• Polls SQS queue  
+• Fetches messages  
+• Invokes Lambda  
+
+❌ No polling code needed  
+
+👉 Lambda is triggered automatically when messages arrive
+
+============================================================
+
+✅ Step 5: Worker Lambda Processing
+-----------------------------------
+WorkerLambda receives event in this format:
+
+{
+  "Records": [
+    {
+      "body": "{\"orderId\":\"ORD123\",\"event\":\"ORDER_CREATED\"}"
+    }
+  ]
+}
+
+Inside WorkerLambda:
+
+• Parse message
+• Send email
+• Log success
+
+
+============================================================
+
+✅ Step 6: Message Deletion (CRITICAL)
+--------------------------------------
+
+✔ If Lambda SUCCESS:
+   → Message is deleted automatically
+
+❌ If Lambda FAILS:
+   → Message is NOT deleted
+   → Becomes visible again
+   → SQS retries later
+
+👉 This retry behavior is automatic and managed by AWS
+
+
+=======================================================================
+
+Order API → Lambda → SQS → Worker Lambda → Email
+
+============================================================
+STEP 1: CREATE SQS QUEUE
+============================================================
+1. Go to AWS Console
+2. Search "SQS"
+3. Click "Create Queue"
+4. Select "Standard Queue"
+5. Name: order-queue
+6. Click "Create"
+
+✅ Copy Queue URL
+
+============================================================
+STEP 2: CREATE WORKER LAMBDA (CONSUMER)
+============================================================
+1. Go to AWS Lambda
+2. Click "Create function"
+3. Name: order-worker-lambda
+4. Runtime: Node.js 18
+
+------------------------------------------------------------
+Add Code:
+------------------------------------------------------------
+
+export const handler = async (event) => {
+  console.log("Event:", JSON.stringify(event));
+
+  for (const record of event.Records) {
+    const message = JSON.parse(record.body);
+
+    console.log("Order ID:", message.orderId);
+    console.log(`Email sent to ${message.email}`);
+  }
+
+  return "Processed";
+};
+
+------------------------------------------------------------
+Add Trigger:
+------------------------------------------------------------
+1. Open Lambda
+2. Click "Add Trigger"
+3. Select SQS
+4. Choose order-queue
+5. Click "Add"
+
+✅ SQS now triggers Lambda automatically
+
+============================================================
+STEP 3: CREATE PUBLISHER LAMBDA
+============================================================
+1. Go to AWS Lambda
+2. Click "Create function"
+3. Name: order-create-lambda
+4. Runtime: Node.js 18
+
+------------------------------------------------------------
+Add Code:
+------------------------------------------------------------
+
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+
+const sqs = new SQSClient({ region: "ap-south-1" });
+
+export const handler = async () => {
+
+  const message = {
+    orderId: "ORD123",
+    event: "ORDER_CREATED",
+    email: "user@test.com"
+  };
+
+  await sqs.send(new SendMessageCommand({
+    QueueUrl: process.env.QUEUE_URL,
+    MessageBody: JSON.stringify(message)
+  }));
+
+  return {
+    statusCode: 200,
+    body: "Order created successfully"
+  };
+};
+
+------------------------------------------------------------
+Environment Variable:
+------------------------------------------------------------
+QUEUE_URL = your SQS queue URL
+
+------------------------------------------------------------
+Permissions:
+------------------------------------------------------------
+Attach policy: AmazonSQSFullAccess
+
+============================================================
+STEP 4: TEST FLOW
+============================================================
+1. Open order-create-lambda
+2. Click "Test"
+
+============================================================
+EXPECTED RESULT
+============================================================
+1. Lambda sends message to SQS
+2. SQS stores message
+3. AWS triggers worker Lambda automatically
+4. Worker Lambda processes message
+5. Email logic executed

@@ -1,0 +1,99 @@
+✅ AWS LAMBDA FOUNDATION (WHY + BASICS)
+
+============================================================
+✅ 1. WHY MOVE FROM EXPRESS TO LAMBDA
+------------------------------------------------------------
+
+Express problems:
+
+	❌ Always running → cost even when idle  
+	❌ Manual scaling  
+	❌ Server crashes affect all APIs  
+	❌ Heavy tasks block event loop  
+	❌ Deployment slow  
+	❌ Hard multi-region  
+
+	Example:
+	1 EC2 running 24x7 → ₹2500/month even for 50 users
+
+------------------------------------------------------------
+
+✅ Lambda Solutions:
+
+	✔ Pay-per-use  
+	✔ Auto-scaling  
+	✔ No server management  
+	✔ Better reliability  
+	✔ Separate functions per API  
+
+	👉 If no traffic → cost = 0
+
+
+============================================================
+✅ 2. EXPRESS VS LAMBDA THINKING
+------------------------------------------------------------
+
+Express:
+• Server runs always
+• You define routes
+• app.listen()
+
+Lambda:
+• No server
+• No port
+• Runs only on event
+
+👉 Lambda = function triggered by event
+
+
+============================================================
+✅ 3. WHAT IS AWS LAMBDA
+------------------------------------------------------------
+
+AWS Lambda is:
+A managed compute service where you upload code, and AWS runs it on-demand, scales it automatically, and charges you only for execution time.
+
+
+	• Serverless compute service
+	• Runs code on-demand
+	• Fully managed
+	• Auto-scaled
+
+	Key properties:
+	✔ Stateless  
+	✔ Event-driven  
+	✔ Short-lived  
+	✔ Pay-per-use  
+
+
+============================================================
+✅ 4. EVENT-DRIVEN MODEL
+------------------------------------------------------------
+
+Trigger → Lambda → Output
+
+Examples:
+• API call → Lambda
+• S3 upload → Lambda
+• SQS message → Lambda
+
+
+============================================================
+✅ 5. WHEN NOT TO USE LAMBDA
+------------------------------------------------------------
+
+❌ Long-running (>15 min)
+❌ Heavy CPU tasks
+❌ Always high traffic
+
+✅ Use ECS / EC2 instead
+
+
+============================================================
+✅ FINAL INTERVIEW LINE
+------------------------------------------------------------
+
+“Lambda removes server management and runs only on demand.
+It improves scalability and reduces cost compared to Express.”
+
+============================================================

@@ -1,0 +1,182 @@
+✅ AWS LAMBDA SCALING & CONFIGURATION (STEP BY STEP - CONSOLE GUIDE)
+============================================================
+
+✅ 1. LAMBDA SCALING (CONCURRENCY CONTROL)
+------------------------------------------------------------
+
+🎯 Goal:
+Control how many Lambda instances run in parallel
+
+✅ Steps:
+1. Go to AWS Console
+2. Open "Lambda" service
+3. Select your Lambda function
+4. Click on "Configuration" tab
+5. Click on "Concurrency"
+
+------------------------------------------------------------
+
+✅ Options:
+
+🔹 Unreserved Concurrency (Default)
+• Uses shared pool (1000)
+• No per-function limit
+
+❌ Problem:
+• Can overload DB
+• Other Lambdas can consume capacity
+
+------------------------------------------------------------
+
+🔹 Reserved Concurrency ✅
+
+✅ Steps:
+1. Click "Edit"
+2. Enable "Reserved concurrency"
+3. Enter value (e.g. 50)
+4. Save
+
+✅ Result:
+• Max 50 parallel executions
+• Extra requests → throttled
+
+============================================================
+
+✅ 2. PROVISIONED CONCURRENCY (REMOVE COLD START)
+------------------------------------------------------------
+
+🎯 Goal:
+Keep Lambda instances always ready
+
+✅ Step A — Create Version:
+1. Go to Lambda function
+2. Click "Actions"
+3. Select "Publish new version"
+4. Enter version name (v1)
+
+------------------------------------------------------------
+
+✅ Step B — Create Alias:
+1. Go to "Aliases"
+2. Click "Create alias"
+3. Name: prod
+4. Map to version v1
+
+------------------------------------------------------------
+
+✅ Step C — Enable Provisioned Concurrency:
+1. Click alias (prod)
+2. Click "Edit"
+3. Enable "Provisioned concurrency"
+4. Set value (e.g. 10)
+5. Save
+
+✅ Result:
+• 10 instances always ready
+• No cold start
+
+❌ Problem:
+• Extra cost if unused
+
+============================================================
+
+✅ 3. SQS TO LAMBDA (EVENT SOURCE MAPPING)
+------------------------------------------------------------
+
+🎯 Goal:
+Control scaling in async processing
+
+✅ Steps:
+1. Open Lambda function
+2. Go to "Configuration"
+3. Click "Triggers"
+4. Add SQS trigger
+
+------------------------------------------------------------
+
+✅ Configure:
+
+🔹 Batch Size:
+Default = 10
+Controls how many messages processed per invocation
+
+🔹 Maximum Concurrency:
+1. Click "Edit trigger"
+2. Set max concurrency (e.g. 50)
+
+✅ Result:
+• Limits how many Lambdas process SQS
+
+============================================================
+
+✅ 4. TIMEOUT & MEMORY SETTINGS
+------------------------------------------------------------
+
+✅ Steps:
+1. Go to "Configuration"
+2. Click "General configuration"
+3. Click "Edit"
+
+------------------------------------------------------------
+
+✅ Set:
+
+🔹 Timeout:
+Example: 10 seconds
+
+🔹 Memory:
+Example: 512 MB
+
+✅ Important:
+• More memory = more CPU
+• Faster execution possible
+
+============================================================
+
+✅ 5. SCALING BEST PRACTICES
+------------------------------------------------------------
+
+✅ Recommended Setup:
+
+✔ Reserved Concurrency: 50
+✔ Provisioned Concurrency: 5-10
+✔ SQS Batch Size: 5-10
+✔ Timeout: Minimum required
+
+------------------------------------------------------------
+
+✅ Why:
+• Prevent DB overload
+• Reduce cold start
+• Control cost
+• Improve performance
+
+============================================================
+
+✅ 6. REAL SCALING FLOW
+------------------------------------------------------------
+
+User Traffic Increases
+↓
+Lambda Creates Instances
+↓
+Hits Concurrency Limit (if set)
+↓
+Requests Throttled OR Queued (SQS)
+↓
+Worker Lambda Processes Gradually
+
+============================================================
+
+✅ 7. INTERVIEW READY ANSWER
+------------------------------------------------------------
+
+"Lambda automatically scales per request.
+We control scaling using reserved concurrency to protect backend systems.
+We use provisioned concurrency to reduce cold starts.
+For async processing, we use SQS with controlled batch size and concurrency."
+
+============================================================
+
+🚀 END OF FILE
+============================================================

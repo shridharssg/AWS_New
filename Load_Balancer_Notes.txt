@@ -1,0 +1,165 @@
+✅ LOAD BALANCER (AWS)
+==================================================
+
+✅ WHAT IS LOAD BALANCER
+--------------------------------------------------
+A load balancer:
+	• Receives incoming requests
+	• Distributes them across multiple servers/services
+
+Purpose:
+	• Prevent overload
+	• Improve availability
+	• Increase performance
+
+--------------------------------------------------
+
+✅ REAL-WORLD ANALOGY
+--------------------------------------------------
+Hospital Reception:
+	Patients → Reception → Doctors (Multiple dr)
+
+Reception = Load Balancer
+
+--------------------------------------------------
+
+✅ WHY LOAD BALANCER IS NEEDED
+--------------------------------------------------
+❌ Without LB:
+	Users → Single Server
+	• Overload
+	• Failure risk
+
+✅ With LB:
+	Users → LB → Multiple Servers
+	• High availability
+	• Failover
+	• Better performance
+
+--------------------------------------------------
+
+✅ AWS CONTEXT
+--------------------------------------------------
+Flow:
+	User
+	 ↓
+	Load Balancer
+	 ↓
+	ECS / EC2
+
+LB handles:
+	• HTTP / HTTPS traffic
+	• Routes to healthy targets
+
+--------------------------------------------------
+
+✅ TYPES
+--------------------------------------------------
+• ALB (Application Load Balancer) → HTTP/HTTPS
+• NLB (Network Load Balancer) → TCP/UDP
+
+--------------------------------------------------
+
+✅ LAMBDA + LOAD BALANCER
+--------------------------------------------------
+❌ Not needed
+
+Reason:
+	• API Gateway handles routing
+	• Lambda auto scales
+
+--------------------------------------------------
+
+✅ ECS EXAMPLE
+--------------------------------------------------
+User
+ ↓
+ALB
+ ↓
+ECS Containers
+
+--------------------------------------------------
+
+✅ INTERVIEW SUMMARY
+--------------------------------------------------
+Load balancer distributes incoming traffic across servers/containers to improve availability and performance
+
+==================================================
+
+✅ HOW TO CREATE LOAD BALANCER (EC2)
+==================================================
+
+STEP 1: Launch EC2 instances
+	• Start with 1–2 instances
+	• Install app (Node.js / Nginx)
+
+STEP 2: Create Target Group
+	• Target type: Instances
+	• Protocol: HTTP
+	• Port: 80
+
+STEP 3: Create ALB
+	• Scheme: Internet-facing
+	• Listener: HTTP (80)
+
+STEP 4: Configure Routing
+	• Attach target group
+
+STEP 5: Configure Health Check
+	• Path: /health or /
+
+STEP 6: Register Targets
+	• Add EC2 instances
+
+STEP 7: Test
+	• Open ALB DNS URL
+
+SCALING POINT:
+	• Increase EC2 when CPU > 60%
+	• Use Auto Scaling Group later
+
+--------------------------------------------------
+
+✅ HOW TO CREATE LOAD BALANCER (ECS)
+==================================================
+
+STEP 1: Create ECS Cluster
+	• Fargate or EC2
+
+STEP 2: Create Task Definition
+	• Container + port (e.g., 3000)
+
+STEP 3: Create Service
+	• Choose number of tasks (start with 1–2)
+
+STEP 4: Enable Load Balancer
+	• Select ALB
+	• New or existing LB
+
+STEP 5: Create Target Group
+	• Target type: IP (for Fargate)
+	• Port: container port
+
+STEP 6: Configure Listener
+	• HTTP 80 → Forward to target group
+
+STEP 7: Deploy Service
+	• ECS auto registers tasks
+
+STEP 8: Test
+	• Access ALB DNS
+
+SCALING POINT:
+	• Increase task count when CPU/Memory > 60%
+	• Enable auto scaling
+
+--------------------------------------------------
+
+✅ FINAL INTERVIEW TIPS
+--------------------------------------------------
+• EC2 → LB + Auto Scaling Group
+• ECS → LB + Service + Task Scaling
+• Always keep LB in public subnet
+• Backend stays private
+
+==================================================

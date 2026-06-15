@@ -1,0 +1,443 @@
+✅ 1️⃣ CREATE LAMBDA: ProductsListLambda
+------------------------------------------------------------
+
+Go to:
+AWS → Lambda → Create Function
+
+✅ Settings:
+• Function name: ProductsListLambda
+• Runtime: Node.js 18.x
+• Architecture: x86_64
+• Execution role: Create new role
+
+------------------------------------------------------------
+
+✅ Lambda Code:
+
+export const handler = async (event) => {
+    console.log("Event received:", JSON.stringify(event));
+
+    return {
+        statusCode: 200,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            products: [
+                { id: "p1", name: "iPhone 15", price: 80000 },
+                { id: "p2", name: "MacBook Pro", price: 200000 }
+            ]
+        })
+    };
+};
+
+✅ Click DEPLOY
+
+------------------------------------------------------------
+
+📌 Important:
+❌ No auth
+❌ No routing
+❌ No HTTPS
+
+✅ Only business logic
+
+
+============================================================
+
+✅ 2️⃣ CREATE API GATEWAY (HTTP API)
+------------------------------------------------------------
+
+Go to:
+API Gateway → Create API
+
+✔ Choose: HTTP API
+❌ Do NOT choose REST API
+
+------------------------------------------------------------
+
+✅ Setup:
+• API name: EcommerceHttpApi
+• Integration: Lambda
+• Select: ProductsListLambda
+
+------------------------------------------------------------
+
+✅ Route:
+• Method: GET
+• Path: /products/list
+
+Click:
+Next → Next → Create
+
+🎉 API is live instantly
+
+
+============================================================
+
+✅ 3️⃣ TEST API
+------------------------------------------------------------
+
+Invoke URL:
+https://xxxx.execute-api.ap-south-1.amazonaws.com
+
+Call:
+GET /products/list
+
+✅ Example:
+https://xxxx.execute-api.ap-south-1.amazonaws.com/products/list
+
+------------------------------------------------------------
+
+✅ Response:
+
+{
+  "products": [
+    { "id": "p1", "name": "iPhone 15", "price": 80000 },
+    { "id": "p2", "name": "MacBook Pro", "price": 200000 }
+  ]
+}
+
+
+============================================================
+
+✅ SENIOR STATEMENT (IMPORTANT)
+------------------------------------------------------------
+
+✔ “We always throttle at API Gateway to protect downstream services and control cost.”
+
+
+============================================================
+
+✅ RATE LIMIT vs BURST LIMIT
+============================================================
+
+✅ Example:
+API: GET /products/list
+
+• Rate: 10 req/sec
+• Burst: 20
+
+------------------------------------------------------------
+
+✅ Rate Limit:
+✔ Sustained traffic control
+✔ Avg 10 requests/sec
+✔ Prevents continuous load
+
+------------------------------------------------------------
+
+✅ Burst Limit:
+✔ Temporary spikes allowed
+✔ Above rate for short time
+✔ Token bucket model
+
+------------------------------------------------------------
+
+✅ Internal Model:
+
+• Bucket size = Burst
+• Refill speed = Rate
+• Each request uses 1 token
+
+
+============================================================
+
+✅ BEHAVIOR SCENARIOS
+------------------------------------------------------------
+
+✅ Normal traffic:
+5 instant + small later load
+✔ Allowed
+✔ Burst not fully used
+
+------------------------------------------------------------
+
+✅ Spike traffic:
+15 requests instantly
+✔ Allowed (within burst)
+✔ Tokens consumed
+
+------------------------------------------------------------
+
+❌ Sustained traffic:
+15 req/sec continuously
+❌ Rejected (429 error)
+
+
+============================================================
+
+✅ BURST REUSE RULE
+------------------------------------------------------------
+
+✔ Burst does NOT reset
+✔ Refills gradually
+✔ Next spike allowed only after refill
+
+
+============================================================
+
+✅ THROTTLING RESULT
+------------------------------------------------------------
+
+✔ API returns HTTP 429
+✔ Lambda NOT invoked
+✔ DynamoDB NOT accessed
+
+✅ Cheap failure
+
+
+============================================================
+
+✅ WHY NOT INCREASE RATE?
+------------------------------------------------------------
+
+❌ High rate = continuous abuse possible
+
+✅ Best practice:
+✔ Lower rate + decent burst
+
+
+============================================================
+
+✅ USAGE PATTERN
+------------------------------------------------------------
+
+Read APIs:
+✔ Higher rate
+✔ Higher burst
+
+Write APIs:
+✔ Lower rate
+✔ Lower burst
+
+
+============================================================
+
+✅ ONE LINE SUMMARY
+------------------------------------------------------------
+
+✔ Rate → sustained traffic
+✔ Burst → temporary spikes
+
+
+============================================================
+
+✅ OPTIONS REQUEST (CORS PREFLIGHT)
+============================================================
+
+✅ What is OPTIONS?
+✔ HTTP method
+✔ Browser permission check
+
+------------------------------------------------------------
+
+✅ When browser sends:
+✔ Cross-origin request
+✔ Authorization header
+✔ Custom headers
+✔ PUT / DELETE etc.
+
+------------------------------------------------------------
+
+✅ What it checks:
+✔ Origin allowed?
+✔ Method allowed?
+✔ Headers allowed?
+
+------------------------------------------------------------
+
+✅ API Gateway behavior:
+✔ Handles OPTIONS
+✔ Lambda NOT invoked
+✔ Returns CORS headers
+
+------------------------------------------------------------
+
+❌ If OPTIONS fails:
+✔ Browser blocks request
+✔ Actual API NOT sent
+✔ Lambda logs EMPTY
+✔ Postman still works
+
+
+============================================================
+
+✅ CORS (SHORT NOTES)
+============================================================
+
+✅ CORS = Cross-Origin Resource Sharing
+
+✔ Browser security mechanism
+
+------------------------------------------------------------
+
+✅ NOT enforced by:
+✔ Postman
+✔ Curl
+✔ Backend
+
+------------------------------------------------------------
+
+✅ Origin definition:
+protocol + domain + port
+
+Example:
+http://localhost:3000 ≠ https://api.com
+
+------------------------------------------------------------
+
+✅ Flow:
+Browser → OPTIONS → Gateway → Response
+→ If allowed → actual request
+
+------------------------------------------------------------
+
+✅ Required headers:
+✔ Access-Control-Allow-Origin
+✔ Access-Control-Allow-Methods
+✔ Access-Control-Allow-Headers
+
+
+============================================================
+
+✅ WHERE TO CONFIGURE CORS
+------------------------------------------------------------
+
+✅ API Gateway ✅
+❌ Lambda ❌
+
+Reason:
+✔ Avoid extra Lambda calls
+✔ Reduce cost
+✔ Clean architecture
+
+
+============================================================
+
+✅ COMMON CORS MISTAKES
+------------------------------------------------------------
+
+❌ Missing Authorization header
+❌ Using * with JWT
+❌ Missing OPTIONS
+
+
+============================================================
+
+✅ KEY PRINCIPLE
+------------------------------------------------------------
+
+✔ CORS controls browser access
+✔ NOT whether API executes
+
+
+============================================================
+
+✅ API GATEWAY CACHING
+============================================================
+
+✅ What it does:
+✔ Stores response in memory
+✔ Returns before Lambda
+
+------------------------------------------------------------
+
+✅ Where configured:
+✔ API / Stage level
+✔ Per route
+
+------------------------------------------------------------
+
+✅ What gets cached:
+✔ Body
+✔ Status code
+✔ Headers
+
+------------------------------------------------------------
+
+✅ Cache Key:
+✔ Path
+✔ Query params
+✔ Optional headers
+
+
+============================================================
+
+✅ CACHE FLOW
+------------------------------------------------------------
+
+Request → Check cache
+
+✔ Hit → return cached
+❌ Miss → call Lambda → store response
+
+
+============================================================
+
+✅ CACHE TTL
+------------------------------------------------------------
+
+✔ Defined per API
+✔ After expiry → new Lambda call
+✔ Balances freshness vs cost
+
+
+============================================================
+
+✅ SUITABLE APIs
+------------------------------------------------------------
+
+✔ Product list
+✔ Category list
+✔ Config APIs
+
+❌ Not suitable:
+• Login
+• Payments
+• Orders
+
+
+============================================================
+
+✅ CACHE MANAGEMENT
+------------------------------------------------------------
+
+✔ Full flush supported
+✔ Done during deployments
+
+
+============================================================
+
+✅ COST NOTE
+------------------------------------------------------------
+
+✔ Cost based on cache size
+✔ Reduces Lambda + DB cost
+
+
+============================================================
+
+✅ CACHE DESIGN RULES
+------------------------------------------------------------
+
+✔ Cache read-only data
+✔ Avoid write APIs
+✔ Keep TTL small for dynamic data
+
+
+============================================================
+
+✅ FINAL SUMMARY
+------------------------------------------------------------
+
+✔ API Gateway = traffic + security layer
+✔ Controls:
+   • Throttling
+   • CORS
+   • Caching
+
+✔ Lambda = only business logic
+
+
+============================================================

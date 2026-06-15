@@ -1,0 +1,99 @@
+✅ AWS LAMBDA CORE CONCEPTS
+
+============================================================
+✅ 1. LAMBDA HANDLER
+------------------------------------------------------------
+
+Entry point of Lambda
+
+Example:
+
+exports.handler = async (event) => {
+  return {
+    statusCode: 200,
+    body: "Hello"
+  };
+};
+
+✔ Replaces Express routes
+✔ AWS decides when to call
+
+
+============================================================
+✅ 2. EVENT OBJECT (VERY IMPORTANT)
+------------------------------------------------------------
+
+Event = input to Lambda
+
+Example:
+
+{
+  "httpMethod": "POST",
+  "body": "{ email, password }"
+}
+
+Mapping:
+
+req.body → event.body  
+req.query → event.queryStringParameters  
+req.headers → event.headers  
+
+
+============================================================
+✅ 3. CONTEXT OBJECT
+------------------------------------------------------------
+
+• Runtime information
+• Not business data
+
+Contains:
+• Request ID
+• Memory info
+• Timeout info
+
+
+============================================================
+✅ 4. IAM ROLE
+------------------------------------------------------------
+
+Lambda cannot access AWS directly
+
+✔ Needs IAM permission
+
+Example:
+dynamodb:GetItem
+dynamodb:PutItem
+
+
+============================================================
+✅ 5. CLOUDWATCH LOGS
+------------------------------------------------------------
+
+console.log → CloudWatch
+
+Path:
+AWS → CloudWatch → Logs
+
+
+============================================================
+✅ 6. EXPRESS → LAMBDA EXAMPLE
+
+Express:
+app.post("/auth/login", (req, res) => {})
+
+Lambda:
+exports.handler = async (event) => {}
+
+✔ Logic same
+✔ Only input/output changes
+
+
+============================================================
+✅ 7. LAMBDA LIMITS
+
+Max time: 15 minutes  
+Stateless (no memory persist)  
+Cold start possible  
+
+
+============================================================

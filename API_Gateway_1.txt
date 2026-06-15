@@ -1,0 +1,377 @@
+✅ API GATEWAY & API MANAGEMENT (MASTER NOTES - COMPLETE)
+============================================================
+
+✅ 1. WHY API GATEWAY EXISTS
+------------------------------------------------------------
+
+Client requirements:
+✔ HTTPS endpoint
+✔ Authentication
+✔ Rate limiting
+✔ Request validation
+✔ Caching
+✔ Logging
+✔ Versioning
+
+❌ Lambda cannot handle:
+• HTTPS exposure
+• Routing
+• Throttling
+• Auth
+• Validation
+
+✅ API Gateway = FULL FRONT DOOR + TRAFFIC CONTROL LAYER
+
+------------------------------------------------------------
+
+✅ Real Example:
+Client calls → /products/list
+
+Gateway handles:
+✔ Is route valid?
+✔ Is user allowed?
+✔ Is traffic under limit?
+✔ Is request valid?
+
+ONLY THEN → Lambda executes
+
+============================================================
+
+✅ 2. TYPES OF API GATEWAY
+------------------------------------------------------------
+
+✅ HTTP API (Recommended ✅)
+✔ Low latency
+✔ Cheap
+✔ JWT auth built-in
+✔ Simple mapping
+
+✅ REST API
+✔ Advanced mapping
+✔ Caching
+✔ API keys
+❌ Slower + costly
+
+✅ WebSocket API
+✔ Real-time apps
+
+👉 Use HTTP API in most modern systems
+
+============================================================
+
+✅ 3. CORE COMPONENTS
+------------------------------------------------------------
+
+✅ API
+• Container for routes
+
+✅ Route
+Example:
+✔ GET /products/list
+✔ POST /orders/create
+
+✅ Stage
+• dev / test / prod
+• Separate environments
+
+============================================================
+
+✅ 4. COMPLETE REQUEST FLOW
+------------------------------------------------------------
+
+Client
+ ↓
+API Gateway
+  • Route match
+  • Auth check
+  • Throttling
+  • Validation
+  • Mapping
+ ↓
+Lambda
+  • Business logic
+ ↓
+API Gateway
+  • Response mapping
+ ↓
+Client
+
+✅ Lambda never handles:
+❌ Auth
+❌ Rate limit
+❌ HTTPS
+
+============================================================
+
+✅ 5. AUTHENTICATION METHODS
+------------------------------------------------------------
+
+✅ JWT / Cognito (MOST USED)
+✔ Gateway validates token
+✔ Lambda receives user context
+
+✅ IAM (internal APIs)
+
+✅ Lambda Authorizer
+✔ Custom logic
+❌ Extra latency
+
+============================================================
+
+✅ 6. THROTTLING & RATE LIMITING
+------------------------------------------------------------
+
+	🎯 Goal: Protect backend + control cost
+
+	✅ Rate limit (steady traffic)
+	Example:
+	10 req/sec
+
+	✅ Burst limit (spikes)
+	Example:
+	20 requests instant
+
+	------------------------------------------------------------
+
+	✅ Scenario:
+
+	✔ 15 requests instantly → allowed (burst)
+	✔ Continuous 15/sec → rejected (rate)
+
+	------------------------------------------------------------
+
+	✅ What happens when exceeding:
+	❌ HTTP 429 returned
+	✔ Lambda NOT invoked
+	✔ DB NOT hit
+
+	------------------------------------------------------------
+
+	✅ Token Bucket Model:
+	• Max tokens = Burst
+	• Refill = Rate
+	• Each request consumes 1
+
+============================================================
+
+✅ 7. CORS (CRITICAL BROWSER BEHAVIOR)
+------------------------------------------------------------
+
+✅ Flow:
+Browser → OPTIONS request (preflight)
+
+Checks:
+✔ Origin allowed?
+✔ Method allowed?
+✔ Headers allowed?
+
+------------------------------------------------------------
+
+✅ If incorrect:
+❌ Browser blocks request
+❌ Lambda NOT invoked
+
+------------------------------------------------------------
+
+✅ Configure ONLY in API Gateway
+✔ Origin
+✔ Headers (Authorization important)
+✔ Methods
+
+------------------------------------------------------------
+
+❌ Common mistakes:
+• Missing Authorization header
+• Using * with credentials
+• Forgetting OPTIONS
+
+============================================================
+
+✅ 8. REQUEST VALIDATION
+------------------------------------------------------------
+
+Example request:
+{
+  "amount": "abc"
+}
+
+✅ Gateway behavior:
+✔ Invalid → rejected
+✔ Lambda NOT invoked
+✔ Cost saved
+
+------------------------------------------------------------
+
+✅ Benefits:
+✔ Cleaner Lambda
+✔ Security
+✔ Cost optimization
+
+============================================================
+
+✅ 9. API CACHING (REAL PURPOSE)
+------------------------------------------------------------
+
+✅ Used for:
+✔ product list
+✔ category list
+
+------------------------------------------------------------
+
+✅ Scenario:
+
+Without cache:
+1000 users → 1000 Lambda + DB calls
+
+With cache:
+1000 users → 1 Lambda + 999 cache hits
+
+------------------------------------------------------------
+
+✅ Benefits:
+✔ Reduce cost
+✔ Reduce DB load
+✔ Stable performance
+
+------------------------------------------------------------
+
+❌ Do NOT cache:
+• login
+• payments
+• user-specific APIs
+
+============================================================
+
+✅ 10. DEBUGGING APIs (PRO LEVEL)
+------------------------------------------------------------
+
+✅ Step 1: Check HTTP status
+
+4xx → Gateway issue
+5xx → Lambda issue
+
+------------------------------------------------------------
+
+✅ Step 2: Check Lambda logs
+
+✔ Logs exist → Lambda problem
+✔ No logs → Gateway issue
+
+------------------------------------------------------------
+
+✅ Common issues:
+
+✔ CORS → browser only
+✔ Throttling → 429 error
+✔ Auth → 401 / 403
+✔ Route mismatch → 404
+
+============================================================
+
+✅ 11. ERROR CODES (IMPORTANT)
+------------------------------------------------------------
+
+✔ 200 → Success
+✔ 400 → Bad request
+✔ 401 → Unauthorized
+✔ 403 → Forbidden
+✔ 404 → Not found
+✔ 429 → Throttled
+✔ 500 → Server error
+
+============================================================
+
+✅ 12. COST CONTROL STRATEGY
+------------------------------------------------------------
+
+✅ Principle:
+REJECT EARLY
+REJECT CHEAP
+
+✔ Use throttling
+✔ Use validation
+✔ Use caching
+
+❌ Avoid unnecessary Lambda execution
+
+============================================================
+
+✅ 13. PRACTICAL BUILD STEPS (CONSOLE)
+------------------------------------------------------------
+
+✅ Step 1: Create Lambda
+• Runtime: Node.js
+• Add handler
+
+✅ Step 2: Create API Gateway
+• Choose HTTP API
+
+✅ Step 3: Add route
+• GET /products/list
+
+✅ Step 4: Attach Lambda
+
+✅ Step 5: Deploy & test
+
+------------------------------------------------------------
+
+✅ Example Response:
+{
+  "products": [
+    { "id": "p1", "name": "iPhone", "price": 80000 }
+  ]
+}
+
+============================================================
+
+✅ 14. QUERY PARAM EXAMPLE
+------------------------------------------------------------
+
+URL:
+/products/list?category=electronics
+
+Lambda code:
+const category = event.queryStringParameters?.category
+
+============================================================
+
+✅ 15. REAL ARCHITECTURE
+------------------------------------------------------------
+
+Client
+ ↓
+CloudFront
+ ↓
+API Gateway
+  • Auth
+  • Throttle
+  • CORS
+  • Validation
+ ↓
+Lambda
+ ↓
+DynamoDB
+
+============================================================
+
+✅ 16. KEY MINDSET (VERY IMPORTANT)
+------------------------------------------------------------
+
+✔ Gateway = Protection layer
+✔ Lambda = Business logic
+✔ Always reject early
+✔ Protect downstream systems
+
+============================================================
+
+✅ 17. INTERVIEW READY STATEMENT
+------------------------------------------------------------
+
+"API Gateway is not just routing. It is responsible for authentication,
+throttling, validation, caching, and cost control. Lambda handles only
+business logic, ensuring clean and scalable architecture."
+
+============================================================
+
+🚀 END OF FILE
+============================================================

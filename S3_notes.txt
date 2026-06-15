@@ -1,0 +1,185 @@
+1. What is Amazon S3
+    - S3 is object storage
+    - Stores data as objects (not filesystem)
+    - Accessed via HTTP (GET, PUT)
+    - Highly durable and scalable
+	
+    - Key idea:
+        - Access objects by name, not by folders
+
+2. Core S3 Concepts
+    - Bucket:
+        - Top-level container (globally unique, region-specific)
+    - Object:
+        - File + metadata
+    - Key:
+        - Object name (path-like string)
+    - Folders:
+        - Logical only (part of key)
+
+    Example:
+        - Bucket: my-app-files
+        - Key: uploads/invoices/invoice1.pdf
+
+3. S3 Storage Classes
+    - Purpose:
+        - Cost vs access trade-off
+
+    - Standard:
+        - Frequent access (default)
+
+    - Intelligent-Tiering:
+        - AWS auto-optimizes cost
+
+    - Standard-IA:
+        - Infrequent access, cheaper
+        - Extra cost on retrieval
+
+    - One Zone-IA:
+        - Stored in single AZ
+        - Cheaper, less durable
+
+    - Glacier:
+        - Archive storage
+        - Retrieval takes minutes to hours
+
+    - Glacier Deep Archive:
+        - Cheapest option
+        - Retrieval takes hours
+
+4. How Data is Accessed in S3
+    - HTTP APIs (GET, PUT)
+    - AWS SDK
+    - Signed URLs
+    - IAM & bucket policies
+
+    - Limitations:
+        - No SQL
+        - No joins
+        - No scanning
+
+5. Correct File Upload Pattern
+    - Incorrect:
+        - Browser → API Gateway → Lambda → S3
+
+    - Correct:
+        - Browser → Signed URL → S3
+
+    - Backend responsibility:
+        - Authorize user
+        - Generate signed URL
+
+6. Signed URLs
+    - Temporary and secure access to S3 objects
+    - Time-limited
+    - Operation-specific (PUT / GET)
+    - Bucket remains private
+
+    - Used for:
+        - Secure uploads
+        - Secure downloads
+
+    - Flow:
+        - Client → Backend → Signed URL
+        - Client → Direct S3 upload/download
+        - URL expires automatically
+
+7. S3 Events → Lambda
+    - S3 triggers Lambda on object events
+
+    - Example:
+        - ObjectCreated (PUT)
+
+    - Flow:
+        - Upload → S3 → Event → Lambda
+
+    - Key point:
+        - Client does NOT wait
+        - Fully asynchronous
+
+8. S3 Event Configuration
+    - Event Type:
+        - ObjectCreated (PUT)
+
+    - Prefix:
+        - Filter path (e.g., uploads/invoices/)
+
+    - Suffix:
+        - File type filter (e.g., .pdf)
+
+    - Destination:
+        - Target Lambda function
+
+    - Permission:
+        - S3 must be allowed to invoke Lambda
+
+9. Why S3 Fits Serverless
+    - Lambda is stateless
+    - S3 stores data permanently
+    - Upload bypasses compute layer
+    - Events enable async workflows
+
+10. Common Mistakes
+    - Uploading files via Lambda
+    - Using public S3 buckets
+    - No expiry on signed URLs
+    - No prefix filter on events
+    - Treating S3 like filesystem
+
+--------------------------------------------------
+
+Detailed Notes
+
+Object Structure:
+    - Bucket → container
+    - Key → object name
+    - Data → file content
+    - Metadata → additional info
+
+Bucket Rules:
+    - Globally unique name
+    - Region specific
+    - Typically:
+        - Private
+        - Versioned
+        - Access-controlled
+
+Signed URL Key Points:
+    - Temporary access
+    - Secure (signed with AWS credentials)
+    - Controls:
+        - Bucket
+        - Key
+        - Operation
+        - Expiry
+
+S3 Event Flow:
+    - File uploaded to S3
+    - S3 detects event
+    - Lambda triggered automatically
+    - Lambda processes file
+
+Lambda Receives:
+    - Bucket name
+    - Object key
+    - File size
+    - Event type
+
+Lambda Actions:
+    - Read file
+    - Validate data
+    - Extract metadata
+    - Update database
+
+Best Architecture Pattern:
+
+    Flow 1 (Synchronous)
+        - Frontend → API Gateway → Lambda → Signed URL
+
+    Flow 2 (Asynchronous)
+        - Frontend → S3 → Lambda (via events)
+
+Conclusion:
+    - Direct upload to S3 improves performance
+    - Signed URLs ensure security
+    - Events enable scalable async processing

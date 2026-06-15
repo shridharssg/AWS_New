@@ -1,0 +1,218 @@
+✅ VPC (Virtual Private Cloud)
+==================================================
+
+1️⃣ HOW THINGS WORK WITHOUT VPC
+--------------------------------------------------
+When you create:
+	• Lambda
+	• API Gateway
+	• S3
+
+By default, AWS runs them on AWS’s shared network.
+
+Example:
+	User → API Gateway → Lambda → Internet
+
+Lambda can access:
+	• Public APIs
+	• Public DBs
+
+Lambda is NOT inside your private network.
+AWS manages networking fully.
+
+✅ Suitable for:
+	• Public APIs
+	• Simple apps
+	• Early development
+
+--------------------------------------------------
+
+❌ PROBLEMS WITHOUT VPC
+--------------------------------------------------
+• Database must NOT be public
+	❌ User → Internet → Database (Security risk)
+
+• No network isolation
+	Everything relies only on IAM
+
+• Enterprise requirements
+	• Private networking
+	• Restricted access
+	• Compliance rules
+
+👉 VPC becomes mandatory
+
+--------------------------------------------------
+
+✅ WHY VPC IS NEEDED
+--------------------------------------------------
+VPC gives you a PRIVATE NETWORK inside AWS
+
+Like:
+	• Office network
+	• Home WiFi
+
+Only approved resources can communicate
+
+--------------------------------------------------
+
+✅ WHAT IS VPC
+--------------------------------------------------
+VPC = Your own private network in AWS
+
+Think:
+	VPC = Big gated campus
+
+--------------------------------------------------
+
+✅ CORE VPC COMPONENTS
+--------------------------------------------------
+1. VPC
+	• Main private network
+
+2. Subnets
+	• Public Subnet (Internet access)
+	• Private Subnet (No internet)
+
+3. Security Groups
+	• Virtual firewall (STATEFUL)
+	• Controls access (who + port)
+
+Example:
+	Allow Lambda → DB on port 5432
+	Block everything else
+
+--------------------------------------------------
+
+✅ INTERNET GATEWAY (IGW)
+--------------------------------------------------
+• Connects VPC to Internet
+• Required for public subnet
+
+Flow:
+	Public Subnet → IGW → Internet
+
+--------------------------------------------------
+
+✅ ROUTE TABLES
+--------------------------------------------------
+• Control traffic routing
+
+Example:
+	0.0.0.0/0 → IGW (Public)
+	0.0.0.0/0 → NAT (Private)
+
+--------------------------------------------------
+
+✅ NAT GATEWAY
+--------------------------------------------------
+• Allows private subnet to access Internet
+
+Flow:
+	Private → NAT → Internet
+
+Rule:
+	❌ Internet cannot initiate back
+
+--------------------------------------------------
+
+✅ NACL (NETWORK ACL)
+--------------------------------------------------
+• Subnet-level security
+• STATELESS
+
+Difference:
+	Security Group = Stateful
+	NACL = Stateless
+
+--------------------------------------------------
+
+✅ VPC ENDPOINT
+--------------------------------------------------
+• Private access to AWS services
+
+Types:
+	• Gateway (S3, DynamoDB)
+	• Interface (others)
+
+--------------------------------------------------
+
+✅ CIDR BLOCK
+--------------------------------------------------
+• Defines IP range
+
+Example:
+	VPC: 10.0.0.0/16
+	Subnet: 10.0.1.0/24
+
+--------------------------------------------------
+
+✅ HIGH AVAILABILITY
+--------------------------------------------------
+• Use multiple AZs
+
+Example:
+	Subnet A → AZ1
+	Subnet B → AZ2
+
+--------------------------------------------------
+
+✅ LOAD BALANCER
+--------------------------------------------------
+• Runs in public subnet
+
+Types:
+	• ALB (HTTP)
+	• NLB (TCP)
+
+--------------------------------------------------
+
+✅ REAL ARCHITECTURE
+--------------------------------------------------
+User
+ ↓
+Internet
+ ↓
+ALB (Public Subnet)
+ ↓
+Lambda / ECS (Private)
+ ↓
+RDS (Private)
+
+Internet access (backend):
+	→ NAT Gateway
+
+Private AWS access:
+	→ VPC Endpoint
+
+--------------------------------------------------
+
+✅ INTERVIEW DIAGRAM (EASY MEMORY)
+==================================================
+
+        🌍 USER
+          ↓
+      Internet
+          ↓
+   [ ALB - PUBLIC ]
+          ↓
+   --------------------
+   |  PRIVATE ZONE    |
+   |                  |
+   |  Lambda / ECS    |
+   |        ↓         |
+   |      RDS (DB)    |
+   --------------------
+          ↓
+   (via NAT Gateway)
+          ↓
+      Internet APIs
+
+✅ Rules to remember:
+• Public → Only entry point
+• Private → Business logic
+• DB → Always private
+• NAT → Outgoing only
+• IGW → Public access
+
+==================================================

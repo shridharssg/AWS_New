@@ -1,0 +1,77 @@
+✅ ECR — SHORT REVISION NOTES
+--------------------------------------------------
+
+1️⃣ WHAT IS ECR
+• ECR = Elastic Container Registry
+• Stores Docker images
+
+👉 Private Docker Hub in AWS
+
+--------------------------------------------------
+
+2️⃣ CORE FLOW
+
+Your Code
+ → Docker Image
+ → Push to ECR
+ → ECS pulls & runs
+
+--------------------------------------------------
+
+3️⃣ HOW CODE IS DEPLOYED
+
+❌ Not like Lambda (ZIP upload)
+✅ Uses Docker image
+
+--------------------------------------------------
+
+4️⃣ STEPS TO USE ECR
+
+✅ Step 1: Write Code
+• Node.js / Python / Java app
+
+✅ Step 2: Create Dockerfile
+• Defines runtime and execution
+
+✅ Step 3: Build Image
+  docker build -t app .
+
+✅ Step 4: Push to ECR
+  - Create repo
+  - Login to ECR
+  - Tag image
+  - Push image
+
+✅ Step 5: Use in ECS
+• Reference image in task definition
+
+--------------------------------------------------
+
+5️⃣ RUNTIME EXECUTION
+
+✔ ECS pulls image from ECR
+✔ Runs container
+✔ Executes app
+✔ Stops when complete
+
+--------------------------------------------------
+
+6️⃣ OUTPUT & LOGS
+
+• Logs → CloudWatch
+• Output → S3 / DB
+
+--------------------------------------------------
+
+7️⃣ WHY ECR IS IMPORTANT
+
+✔ Secure image storage
+✔ Integrated with ECS
+✔ Version management
+
+--------------------------------------------------
+
+🔑 ONE LINE SUMMARY
+ECR stores Docker images that ECS pulls to run containerized applications.
+
+--------------------------------------------------

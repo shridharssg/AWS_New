@@ -1,0 +1,125 @@
+✅ ECS
+--------------------------------------------------
+
+1️⃣ WHY ECS IS NEEDED
+	• Lambda limitations:
+	  - Max 15 min execution ❌
+	  - Limited CPU & memory ❌
+	• Use case:
+	  - Export 1M records
+	  - Heavy processing
+	  - Long-running jobs
+
+✅ ECS solves:
+	✔ Long execution (no timeout)
+	✔ High CPU & memory
+	✔ Full runtime control
+
+--------------------------------------------------
+
+2️⃣ WHAT IS ECS
+	• ECS = Elastic Container Service
+	• Runs applications as Docker containers
+
+👉 Mental model:
+	• Lambda = short jobs
+	• ECS = long/heavy jobs
+
+--------------------------------------------------
+
+3️⃣ ECS CORE COMPONENTS
+
+✅ CLUSTER
+	• Logical group of resources
+	• Tasks/services run inside cluster
+
+✅ TASK DEFINITION (MOST IMPORTANT)
+	• Blueprint of container
+	• Defines:
+	  - Docker image
+	  - CPU / memory
+	  - Env vars
+	  - Logs
+
+✅ TASK
+	• Running instance of task definition
+
+✅ SERVICE
+	• Keeps tasks running continuously
+	• Auto-restart + scaling
+
+Use for:
+	✔ APIs
+	✔ Long-running workers
+
+Avoid for:
+	❌ One-time jobs
+
+--------------------------------------------------
+
+4️⃣ FARGATE VS EC2
+
+✅ FARGATE (Recommended)
+✔ No server management
+✔ Pay per usage
+
+❌ EC2
+• Manual infra management
+
+👉 Use Fargate for learning + real projects
+
+--------------------------------------------------
+
+5️⃣ ECS VS LAMBDA
+
+• Lambda:
+  - 15 min limit
+  - Lightweight tasks
+
+• ECS:
+  - Unlimited runtime
+  - Heavy workloads
+
+👉 Rule: Lambda first, ECS when needed
+
+--------------------------------------------------
+
+6️⃣ ARCHITECTURE USAGE
+
+✅ Example:
+API Gateway
+ → Step Function
+ → ECS Task (Heavy Job)
+
+OR
+
+SQS
+ → ECS Worker
+
+✔ ECS complements Lambda
+❌ Does not replace Lambda
+
+--------------------------------------------------
+
+7️⃣ REAL EXAMPLE — EXPORT JOB
+
+Flow:
+API → Lambda → ECS Task → S3
+
+Inside ECS:
+• Fetch data in batches
+• Generate CSV
+• Upload to S3
+
+✔ Runs for 30–60 min
+✔ No timeout
+
+--------------------------------------------------
+
+9️⃣ SIMPLE RULE
+
+✔ Long heavy jobs → ECS
+✔ Workflow orchestration → Step Functions
+✔ Async queue processing → SQS
+
+--------------------------------------------------

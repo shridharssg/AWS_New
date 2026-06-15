@@ -1,0 +1,181 @@
+✅ AWS DYNAMODB
+
+============================================================
+✅ 1. WHAT IS DYNAMODB
+------------------------------------------------------------
+• Managed, serverless NoSQL database
+• Designed for high scale & low latency (query result quickly from db) 
+• Works on direct lookup (NOT search)
+
+✔ Use when you know exact key
+❌ Not suitable for ad-hoc queries
+
+============================================================
+✅ 2. DYNAMODB vs SQL
+------------------------------------------------------------
+• SQL → design tables first
+• DynamoDB → design access patterns first
+
+✔ No joins
+✔ Schema-less
+✔ Data modeled based on access
+
+============================================================
+✅ 3. CORE CONCEPTS
+------------------------------------------------------------
+• Table → collection of items
+• Item → single record
+• Attribute → fields in item
+
+Example:
+{
+  "PK": "electronics",
+  "SK": "p123",
+  "name": "iPhone",
+  "price": 80000
+}
+
+============================================================
+✅ 4. PARTITION KEY (PK)
+------------------------------------------------------------
+• Main lookup key
+• Decides data distribution
+
+✔ High cardinality required
+❌ Avoid single static PK (hot partition)
+
+============================================================
+✅ 5. SORT KEY (SK)
+------------------------------------------------------------
+• Used to differentiate items within same PK
+• Enables sorting and filtering
+
+============================================================
+✅ 6. PRIMARY KEY TYPES
+------------------------------------------------------------
+✔ Simple Key → PK only
+✔ Composite Key → PK + SK (most used)
+
+============================================================
+✅ 7. ACCESS PATTERN (MOST IMPORTANT)
+------------------------------------------------------------
+• Define how application queries data
+
+✔ Every API must map to PK or GSI
+
+============================================================
+✅ 8. QUERY vs SCAN
+------------------------------------------------------------
+✔ Query:
+• Uses PK
+• Fast and cheap
+
+❌ Scan:
+• Reads entire table
+• Slow and expensive
+
+============================================================
+✅ 9. GSI (GLOBAL SECONDARY INDEX)
+------------------------------------------------------------
+• Alternate lookup key
+• Enables multiple query patterns
+
+✔ Use only when required
+❌ Avoid too many GSIs
+
+============================================================
+✅ 10. SINGLE TABLE DESIGN
+------------------------------------------------------------
+• Store multiple entities in one table
+
+Example:
+PK = USER#123
+SK = ORDER#987
+
+============================================================
+✅ 11. ORDER EXAMPLE
+------------------------------------------------------------
+API: GET /users/123/orders
+
+Design:
+PK = USER#123
+SK = ORDER#XXX
+
+✔ Query returns all orders
+
+============================================================
+✅ 12. CAPACITY MODES
+------------------------------------------------------------
+✔ On-Demand → auto scale (recommended)
+✔ Provisioned → fixed capacity
+
+============================================================
+✅ 13. RCU / WCU
+------------------------------------------------------------
+• RCU = read capacity
+• WCU = write capacity
+
+Depends on:
+• item size
+• operation type
+
+============================================================
+✅ 14. PARTITION LIMITS
+------------------------------------------------------------
+• ~3000 RCU / ~1000 WCU per partition
+
+❌ Bad design = throttling
+
+============================================================
+✅ 15. TTL (TIME TO LIVE)
+------------------------------------------------------------
+• Auto data expiry
+
+Example:
+{
+  "ttl": 1713379200
+}
+
+============================================================
+✅ 16. DYNAMODB STREAMS
+------------------------------------------------------------
+• Capture changes
+• Trigger Lambda
+
+✔ Used for event-driven architecture
+
+============================================================
+✅ 17. COMMON MISTAKES
+------------------------------------------------------------
+❌ Using Scan in APIs
+❌ Designing without access patterns
+❌ Creating many GSIs
+❌ Expecting joins
+
+============================================================
+✅ 18. WHEN NOT TO USE
+------------------------------------------------------------
+❌ Complex queries
+❌ Reporting
+❌ relational-heavy systems
+
+============================================================
+✅ 19. REPLICAS (GLOBAL TABLES)
+------------------------------------------------------------
+• Same table across regions
+
+✔ Improves latency
+✔ Disaster recovery
+
+❌ Eventually consistent across regions
+
+============================================================
+✅ 20. INTERVIEW SUMMARY
+------------------------------------------------------------
+In DynamoDB, design is based on access patterns.
+Use high-cardinality PK and Query operations.
+Avoid Scan and unnecessary GSIs.
+
+============================================================
+END OF FILE
+============================================================

@@ -1,0 +1,143 @@
+✅ IAM — SHORT REVISION NOTES
+--------------------------------------------------
+
+1️⃣ WHAT IS IAM
+• IAM controls access in AWS
+• Decides WHO can do WHAT on WHICH resource
+
+--------------------------------------------------
+
+2️⃣ CORE IAM COMPONENTS
+
+✅ IAM USER
+• Represents a human
+• Used for Console / CLI access
+• Example: Developer accessing AWS
+
+✅ IAM ROLE (MOST IMPORTANT)
+• Used by AWS services (not humans)
+• No password or access keys
+• Provides temporary permissions
+• Used by: Lambda, ECS, Step Functions
+
+✅ IAM POLICY
+• JSON document defining permissions
+• Attached to users or roles
+• Example: Allow Lambda to read/write DynamoDB
+
+--------------------------------------------------
+
+3️⃣ LAMBDA ACCESSING DYNAMODB
+• Create IAM Role
+• Attach permissions:
+  - dynamodb:GetItem
+  - dynamodb:PutItem
+• Assign role to Lambda
+
+✅ Result:
+✔ Lambda accesses DynamoDB
+✔ No AWS keys in code
+
+--------------------------------------------------
+
+4️⃣ ECS ACCESSING AWS SERVICES
+• Uses Task Role (same as Lambda role)
+• Defines access to:
+  - S3
+  - Secrets Manager
+  - Databases
+
+--------------------------------------------------
+
+5️⃣ HUMAN USER ACCESSING LAMBDA
+• Create IAM User
+• Attach permission:
+  - lambda:InvokeFunction
+
+✅ Result:
+✔ User can invoke Lambda via Console/CLI
+
+--------------------------------------------------
+
+6️⃣ API GATEWAY → LAMBDA
+• No IAM user needed
+• Permission handled via: lambda:AddPermission
+
+--------------------------------------------------
+
+7️⃣ GOLDEN IAM RULE (VERY IMPORTANT)
+❌ Never store AWS keys in code
+✅ Always use IAM roles
+
+--------------------------------------------------
+
+8️⃣ LEAST PRIVILEGE PRINCIPLE
+• Grant only required permissions
+
+Avoid:
+  - Action: *
+  - Resource: *
+
+👉 Critical interview concept
+
+--------------------------------------------------
+
+🔑 ONE LINE SUMMARY
+IAM uses users for humans, roles for services, and policies to control access securely.
+
+--------------------------------------------------
+
+✅ EXAMPLE 1: LAMBDA → DYNAMODB
+
+Scenario:
+OrderLambda needs to read/write OrdersTable
+
+✔ Correct Setup:
+
+Step 1: Create IAM Role
+  Name: OrderLambdaExecutionRole
+  Trusted Entity: Lambda
+
+Step 2: Attach Policy
+{
+  "Effect": "Allow",
+  "Action": [
+    "dynamodb:GetItem",
+    "dynamodb:PutItem",
+    "dynamodb:Query"
+  ],
+  "Resource": "arn:aws:dynamodb:<region>:<account-id>:table/OrdersTable"
+}
+
+Step 3: Attach Role to Lambda
+OrderLambda → Execution Role → OrderLambdaExecutionRole
+
+✅ Result:
+✔ Secure access
+✔ No credentials in code
+✔ Production best practice
+
+--------------------------------------------------
+
+✅ EXAMPLE 2: USER → INVOKE LAMBDA
+
+Scenario:
+Human user wants to invoke Lambda
+
+✔ Correct Setup:
+
+Step 1: Create IAM User
+  Name: dev-user
+
+Step 2: Attach Policy
+{
+  "Effect": "Allow",
+  "Action": "lambda:InvokeFunction",
+  "Resource": "arn:aws:lambda:<region>:<account-id>:function:OrderLambda"
+}
+
+✅ Result:
+✔ User can invoke Lambda
+✔ Access is limited and controlled
+
+--------------------------------------------------
