@@ -1,5 +1,8 @@
 ✅ AWS LAMBDA ADVANCED (COMPLETE + REAL-WORLD)
 
+IMP---
+https://www.freecodecamp.org/news/aws-lambda-interview-questions/
+
 ============================================================
 ✅ 1. EXECUTION ENVIRONMENT
 ------------------------------------------------------------
